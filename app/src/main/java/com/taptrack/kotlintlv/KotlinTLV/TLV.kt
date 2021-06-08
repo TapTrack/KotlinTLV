@@ -92,6 +92,16 @@ fun (List<TLV>).writeOutTLVBinary(): ByteArray {
     return buf.readByteArray()
 }
 
+//fun toByteArray(tlv: TLV): ByteArray {
+//    if(tlv.typeVal > 65279){
+//        throw IllegalArgumentException("Unsupported type amount - type too large")
+//    }
+//    if (tlv.value.size > 65279){
+//        throw IllegalArgumentException("Unsupported type amount - length too large")
+//    }
+//    var tlvAsByteArray = ByteArray(tlv.value.size)
+//}
+
 @Throws(TLV.BadCardStateException::class)
 fun parseTlvData(data: ByteArray): List<TLV> {
     if (data.size < 2) {

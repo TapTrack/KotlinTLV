@@ -15,23 +15,13 @@ class KotlinTLVSpec{
 //        ): Unit
 //    }
 
-    // Composed TLV
-    @Test
-    fun assertLength (value: ByteArray) {
-        assertTrue(value.size < 65279)
-    }
-
-    @Test
-    fun assertTag (typeVal: Int) {
-        assertTrue(typeVal < 65279)
-    }
 
     // Converting a TLV to a byte array
     @Test
     fun singleByteSingleByteTag () {
         val length : Int = 5
         val value: ByteArray = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
-        val tag : Int = 1
+        val tag = 1
         val expectedByteArray : ByteArray = byteArrayOf(0x01,0x05,0x00,0x00,0x00,0x00,0x00)
         assertEquals(TLV(tag, value), expectedByteArray)
     }
