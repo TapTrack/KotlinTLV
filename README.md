@@ -60,19 +60,19 @@ The ```fetchTlvValue``` function returns the TLV value in the list with the corr
 ```
 ​
 ### Full TLV specification
-​
+
 M.1 TLV Format
-​
+
 M.1.1 Type Field
 The type value is generally a 0x01->0xFE single byte corresponding to the type of the value. 0x00 and 0xFF are special values with 0x00 corresponding to a special NULL TLV that has no length or value fields. The NULL TLV should not be used for transaction signing. If 0xFF is used, this indicates that a two byte type is in use, which will follow the 0xFF. Legal values for the two-byte TLV are 0x00FF->0xFEFF. All values from 0x0000 to 0x00FE are not legal and should be represented using the single-byte type format. 0xFF00->0xFFFF are reserved for future use in extending the protocol (RFU).
-​
+
 M.1.2 Length Field
 Similarly to the Type field specified in 4.1.1, the length field is generally a single byte 0x00-0xFE, corresponding to the number of bytes in the value field. Unlike the Type field, the length 0x00 does not have a special meaning and merely indicates that the value is of zero length. This is a legal situation if the mere presence of the TLV is all that is needed to transmit the information it represents. If the value is longer than 0xFE (254) bytes, a two-byte length is in use. Similar to the Type field, the length field is set to 0xFF to indicate a two-byte type followed by a value of 0x00FF->0xFEFF. Values from 0x0000 to 0x00FE are not legal and should be represented using the single-byte length format. Values from 0xFF00 to 0xFFFF are reserved for future use in extending the protocol.
-​
+
 M.1.3 Value Field
 The value field’s format and content varies depending on the type of TLV, but can currently be anything from 0-65,279 bytes.
-​
-​
+
+
 ## Author
 MarkCaii, caimark93@gmail.com
 ​
