@@ -2,19 +2,22 @@
 Kotlin library for working with Tag-Length-Value encoded data
 ​
 ## Examples
-​
+
 ### Declaring/Composing TLVs
-To declare compose a TLV you need a tag of type Int and a value of type ByteArray
+To declare and compose a TLV the user must provide a tag of type Int and a value of type ByteArray:
 ​
 ```kotlin
   val tag: Int = 1
   val value: ByteArray = byteArrayOf(0x00,0x00,0x00,0x00,0x00)
-  val tlv = TLV(tag, value)
-  // This creates a TLV with tag 1 and value of [0x00,0x00,0x00,0x00,0x00]
 ```
+Then construct the TLV by using the tag and the value
+```kotlin
+  val tlv = TLV(tag, value)   // This creates a TLV with tag 1 and value of [0x00,0x00,0x00,0x00,0x00]
+```
+
 ​
 ### Parsing and Validating TLVs
-There are two functions one for writing out the TLV List as a ByteArray and one for writing the ByteArray data as a list of TLVs
+There are two functions used for parsing TLV data:
 
 The ```parseTlvData(data: ByteArray)``` function is used to parse a ByteArray of TLV data into a list of TLVs
 ```kotlin
@@ -81,9 +84,6 @@ The length field is generally a single byte 0x00-0xFE, corresponding to the numb
 #### Value Field
 The value field’s format and content varies depending on the type of TLV, but can currently be anything from 0-65,279 bytes.
 
-
-## Author
-MarkCaii, caimark93@gmail.com
 ​
 ## License
 ​
