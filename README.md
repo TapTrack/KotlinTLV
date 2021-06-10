@@ -19,7 +19,7 @@ The ```parseTlvData(data: ByteArray)``` function is used to parse a ByteArray of
   val tlvs : List<TLV> = parseTlvData(rawTlvs) // Creates a list of 2 tlvs with a single byte tag and length of 0
 ```
 ​
-The ```(List<TLV>).writeOutTLVBinary()``` fucntion is used to parse a list of TLVs into a ByteArray
+The ```(List<TLV>).writeOutTLVBinary()``` function is used to parse a list of TLVs into a ByteArray
 ```kotlin
   val tag1 = 1
   val tag2 = 2
