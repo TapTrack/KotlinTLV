@@ -21,8 +21,18 @@ There are two functions used for parsing TLV data:
 
 The ```parseTlvData(data: ByteArray)``` function is used to parse a ByteArray of TLV data into a list of TLVs
 ```kotlin
-  val rawTlvs : ByteArray = byteArrayOf(0x01,0x00,0x02,0x00)
+  val rawTlvs : ByteArray = byteArrayOf(0x01,0x05,0x00,0x00,0x00,0x00,0x00,0x02,0x05,0x00,0x00,0x00,0x00,0x00)
   val tlvs : List<TLV> = parseTlvData(rawTlvs) // Creates a list of 2 tlvs with a single byte tag and length of 0
+```
+this is the same as creating a list of the following TLVs:
+```kotlin
+  val length = 5
+  val value = byteArrayOf(0x00,0x00,0x00,0x00,0x00)
+  val firstTag = 1
+  val secondTag = 2
+  var listOfTlvs : MutableList<TLV> = mutableListOf()
+  listOfTlvs.add(TLV(firstTag,value))
+  listOfTlvs.add(TLV(secondTag,value))
 ```
 ​
 The ```(List<TLV>).writeOutTLVBinary()``` function is used to parse a list of TLVs into a ByteArray
