@@ -23,7 +23,7 @@ class KotlinTLVSpec{
         val value: ByteArray = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
         val tag = 1
         val expectedByteArray : ByteArray = byteArrayOf(0x01,0x05,0x00,0x00,0x00,0x00,0x00)
-        assertArrayEquals(toByteArray(TLV(tag, value)), expectedByteArray)
+        assertArrayEquals((TLV(tag, value)).toByteArray(), expectedByteArray)
     }
 
     @Test
@@ -40,7 +40,7 @@ class KotlinTLVSpec{
         }
         expectedByteArray[0] = 0x01
         expectedByteArray[1] = 0x20
-        assertArrayEquals(toByteArray(TLV(tag.toInt(), value)), expectedByteArray)
+        assertArrayEquals((TLV(tag.toInt(), value).toByteArray()), expectedByteArray)
     }
 
     @Test
@@ -59,7 +59,7 @@ class KotlinTLVSpec{
         expectedByteArray[1] = 0xFF.toByte()
         expectedByteArray[2] = 0x03
         expectedByteArray[3] = 0xE8.toByte()
-        assertArrayEquals(toByteArray(TLV(tag, value)), expectedByteArray)
+        assertArrayEquals(TLV(tag, value).toByteArray(), expectedByteArray)
     }
 
     @Test
@@ -78,7 +78,7 @@ class KotlinTLVSpec{
         expectedByteArray[1] = 0x03
         expectedByteArray[2] = 0xE8.toByte()
         expectedByteArray[3] = 0x20
-        assertArrayEquals(toByteArray(TLV(tag, value)), expectedByteArray)
+        assertArrayEquals((TLV(tag, value).toByteArray()), expectedByteArray)
     }
 
     @Test
@@ -99,7 +99,7 @@ class KotlinTLVSpec{
         expectedByteArray[3] = 0xFF.toByte()
         expectedByteArray[4] = 0x03
         expectedByteArray[5] = 0xE8.toByte()
-        assertArrayEquals(toByteArray(TLV(tag, value)), expectedByteArray)
+        assertArrayEquals((TLV(tag, value).toByteArray()), expectedByteArray)
     }
 
     // Converting a list of TLVs to a byte array
