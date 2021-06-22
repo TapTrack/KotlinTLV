@@ -3,6 +3,8 @@ Kotlin library for working with Tag-Length-Value encoded data
 ​
 ## Examples
 
+### Getting started
+To use the KotlinTLV library the user must add ```implementation 'com.taptrack:kotlin-tlv:1.0.0'``` to their module ```build.gradle``` file.
 ### Declaring/Composing TLVs
 To declare and compose a TLV the user must provide a tag of type Int and a value of type ByteArray:
 ​
@@ -14,10 +16,8 @@ Then construct the TLV by using the tag and the value
 ```kotlin
   val tlv = TLV(tag, value)   // This creates a TLV with tag 1 and value of [0x00,0x00,0x00,0x00,0x00]
 ```
-
-​
 ### Parsing and Validating TLVs
-There are two functions used for parsing TLV data:
+To parse TLV data the following functions are used: 
 
 The ```parseTlvData(data: ByteArray)``` function is used to parse a ByteArray of TLV data into a list of TLVs
 ```kotlin
@@ -33,6 +33,12 @@ this is the same as creating a list of the following TLVs:
   var listOfTlvs : MutableList<TLV> = mutableListOf()
   listOfTlvs.add(TLV(firstTag,value))
   listOfTlvs.add(TLV(secondTag,value))
+```
+For a single TLV ```(TLV).toByteArray()``` is used:
+```kotlin
+  val value = byteArrayOf(0x00,0x00,0x00,0x00,0x00)
+  val tag = 1
+  val tlv = TLV(tag,value).toByteArray() // returns [0x01,0x05,0x00,0x00,0x00,0x00,0x00]
 ```
 ​
 The ```(List<TLV>).writeOutTLVBinary()``` function is used to parse a list of TLVs into a ByteArray
