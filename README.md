@@ -4,7 +4,7 @@ Kotlin library for working with Tag-Length-Value encoded data
 ## Examples
 
 ### Getting started
-To use the KotlinTLV library the user must add ```implementation 'com.taptrack:kotlin-tlv:1.0.0'``` to their module ```build.gradle``` file.
+To use the KotlinTLV library the user must add ```implementation 'com.taptrack:kotlin-tlv:2.0.0'``` to their module ```build.gradle``` file.
 ### Declaring/Composing TLVs
 To declare and compose a TLV the user must provide a tag of type Int and a value of type ByteArray:
 ​
@@ -26,7 +26,6 @@ The ```parseTlvData(data: ByteArray)``` function is used to parse a ByteArray of
 ```
 this is the same as creating a list of the following TLVs:
 ```kotlin
-  val length = 5
   val value = byteArrayOf(0x00,0x00,0x00,0x00,0x00)
   val firstTag = 1
   val secondTag = 2
@@ -56,7 +55,7 @@ The ```(List<TLV>).writeOutTLVBinary()``` function is used to parse a list of TL
 ```
 ​
 ### Fetching TLVs
-The ```lookUpTlvInList``` function returns the TLV in the list with the corresponding tag and throws an ```UnsupportedOperationException``` if the tag isn't present in the TLV list
+The ```lookUpTlvInList``` function returns the TLV in the list with the corresponding tag and throws a ```TLVNotFoundException``` if the tag isn't present in the TLV list
 ```kotlin
   val tag : Int = 1
   val value : ByteArray = byteArrayOf(0x00)
@@ -64,7 +63,7 @@ The ```lookUpTlvInList``` function returns the TLV in the list with the correspo
   var tlvList : MutableList<TLV> = mutableListOf()
   tlvList.add(tlv)
   lookUpTlvInList(tlvList, tag) // Returns tlv
-  lookUpTlvInList(tlvList, tag+1) // Throws UnsupportedOperationException
+  lookUpTlvInList(tlvList, tag+1) // Throws TLVNotFoundException
 ```
 ​
 The ```lookUpTlvInLisIfPresent``` function returns the TLV in the list with the corresponding tag and returns null if the tag isn't present in the TLV list
