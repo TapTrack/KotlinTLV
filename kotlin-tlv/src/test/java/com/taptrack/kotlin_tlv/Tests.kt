@@ -1,20 +1,96 @@
 package com.taptrack.kotlin_tlv
 
 import android.annotation.SuppressLint
+import com.taptrack.kotlin_tlv.ByteUtils.intToArray
 import org.junit.Assert.*
 import org.junit.Test
 
 
 class KotlinTLVSpec{
-//    interface Asserter {
-//
-//        open fun assertEquals(
-//            message: String?,
-//            expected: Any?,
-//            actual: Any?
-//        ): Unit
-//    }
 
+    // IllegalArgumentException tests
+    @Test
+    fun tagGreaterThan65279 () {
+        val value = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
+        val tag = 65280
+        assertThrows("Unsupported type amount - type too large", IllegalArgumentException::class.java){
+            val tlv = TLV(tag, value)
+        }
+    }
+
+    @Test
+    fun valueLengthGreaterThan65279 () {
+        val length = 65280
+        val value = ByteArray(length)
+        for(i in 0 until length){
+            value[i] = 0x00
+        }
+        val tag = 5
+        assertThrows("Unsupported type amount - length too large", IllegalArgumentException::class.java){
+            val tlv = TLV(tag, value)
+        }
+    }
+
+    // MalformedTlvByteArrayException tests
+    @Test
+    fun dataLengthLessThan2(){
+        val data = byteArrayOf(0x00)
+        assertThrows("Too short to contain type and length", TLV.MalformedTlvByteArrayException::class.java){
+            parseTlvData(data)
+        }
+    }
+
+    @Test
+    fun twoByteTagOneByteLengthError(){
+        val tag = 1000
+        val length = 5
+        val data = byteArrayOf(0xFF.toByte(), 0x03, 0xE8.toByte(), length.toByte(), 0x00, 0x00, 0x00, 0x00)
+        assertThrows("Data too short to contain value specified in length header", TLV.MalformedTlvByteArrayException::class.java){
+            parseTlvData(data)
+        }
+    }
+
+    @Test
+    fun twoByteTagTwoByteLengthError(){
+        val tag = intToArray(1000)
+        val length = intToArray(1000)
+        val value = ByteArray(999)
+        for(i in 0 until 999){
+            value[i] = 0x00
+        }
+        val data = byteArrayOf(0xFF.toByte(), 0x03, 0xE8.toByte(), 0xFF.toByte(), 0x03, 0xE8.toByte()) + value
+        assertThrows("Data too short to contain value specified in length header", TLV.MalformedTlvByteArrayException::class.java){
+            parseTlvData(data)
+        }
+    }
+
+    @Test
+    fun oneByteTagTwoByteLengthError(){
+        val tag = 5
+        val length = intToArray(1000)
+        val value = ByteArray(999)
+        for(i in 0 until 999){
+            value[i] = 0x00
+        }
+        val data = byteArrayOf(tag.toByte(), 0xFF.toByte(), 0x03, 0xE8.toByte()) + value
+        assertThrows("Data too short to contain value specified in length header", TLV.MalformedTlvByteArrayException::class.java){
+            parseTlvData(data)
+        }
+    }
+
+    @Test
+    fun oneByteTagOneByteLengthError(){
+        val tag = 5
+        val length = 5
+        val value = ByteArray(4)
+        for(i in 0 until 4){
+            value[i] = 0x00
+        }
+        val data = byteArrayOf(tag.toByte(), length.toByte()) + value
+        assertThrows("Data too short to contain value specified in length header", TLV.MalformedTlvByteArrayException::class.java){
+            parseTlvData(data)
+        }
+    }
 
     // Converting a TLV to a byte array
     @Test
@@ -23,7 +99,7 @@ class KotlinTLVSpec{
         val value: ByteArray = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
         val tag = 1
         val expectedByteArray : ByteArray = byteArrayOf(0x01,0x05,0x00,0x00,0x00,0x00,0x00)
-        assertArrayEquals((TLV(tag, value)).toByteArray(), expectedByteArray)
+        assertArrayEquals(TLV(tag, value).toByteArray(), expectedByteArray)
     }
 
     @Test
@@ -508,7 +584,9 @@ class KotlinTLVSpec{
         val tlv = TLV(tag, value)
         var tlvList : MutableList<TLV> = mutableListOf()
         tlvList.add(tlv)
-        assertEquals(lookUpTlvInList(tlvList, tag+1), tlv)
+        assertThrows(TLV.TLVNotFoundException::class.java){
+            lookUpTlvInList(tlvList, tag+1)
+        }
     }
 
     @Test

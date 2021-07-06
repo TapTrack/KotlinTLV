@@ -22,7 +22,7 @@ data class TLV (
         }
     }
 
-    public class BadCardStateException : Exception {
+    public class MalformedTlvByteArrayException : Exception {
         constructor() {}
 
         constructor(message: String) : super(message) {}
@@ -37,6 +37,16 @@ data class TLV (
                     enableSuppression: Boolean,
                     writableStackTrace: Boolean) : super(message, cause, enableSuppression, writableStackTrace) {
         }
+    }
+
+    public class TLVNotFoundException : Exception {
+        constructor() {}
+
+        constructor(message: String) : super(message) {}
+
+        constructor(message: String, cause: Throwable) : super(message, cause) {}
+
+        constructor(cause: Throwable) : super(cause) {}
     }
 
     override fun equals(other: Any?): Boolean {
@@ -123,10 +133,10 @@ fun (TLV).toByteArray(): ByteArray {
 }
 
 //@android.support.annotation.RequiresApi(Build.VERSION_CODES.GINGERBREAD)
-@Throws(TLV.BadCardStateException::class)
+@Throws(TLV.MalformedTlvByteArrayException::class)
 fun parseTlvData(data: ByteArray): List<TLV> {
     if (data.size < 2) {
-        throw TLV.BadCardStateException("Too short to contain type and length")
+        throw TLV.MalformedTlvByteArrayException("Too short to contain type and length")
     }
 
     var currentIdx = 0
@@ -146,7 +156,7 @@ fun parseTlvData(data: ByteArray): List<TLV> {
                 isTwoByteTag = true
                 tag = arrayToInt(byteArrayOf(0, 0) + data[currentIdx+1] + data[currentIdx+2])
             } else{
-                throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+                throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
             }
         } else {
             tag = data[currentIdx].toInt()
@@ -160,13 +170,13 @@ fun parseTlvData(data: ByteArray): List<TLV> {
                         length = arrayToInt(byteArrayOf(0,0) + data[currentIdx+4] + data[currentIdx+5])
                     }
                     else{
-                        throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+                        throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
                     }
                 }else{ // One byte length with two byte tag
                     if(currentIdx + 3 < data.size){
                         length = data[currentIdx+3].toInt()
                     }else{
-                        throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+                        throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
                     }
                 }
             }
@@ -176,7 +186,7 @@ fun parseTlvData(data: ByteArray): List<TLV> {
                 if(currentIdx + 3 < data.size){
                     length = arrayToInt(byteArrayOf(0, 0) + data[currentIdx+2] + data[currentIdx+3])
                 }else{
-                    throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+                    throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
                 }
             }else{ //one byte length with one byte tag
                 length = data[currentIdx+1].toInt()
@@ -187,7 +197,7 @@ fun parseTlvData(data: ByteArray): List<TLV> {
 //        val length = data[currentIdx + 1].toInt() and 0xff
 
         if (data.size < (currentIdx + length + 2)) {
-            throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+            throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
         }
 
         var valueStart: Int
@@ -207,23 +217,13 @@ fun parseTlvData(data: ByteArray): List<TLV> {
         if(valueStart + length - 1 < data.size && length != 0){
             value += Arrays.copyOfRange(data, valueStart, valueStart+length)
         }else if (length != 0){
-            throw TLV.BadCardStateException("Data too short to contain value specified in length header")
+            throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
         }
         try{
             tlvs.add(TLV(tag, value))
         }catch (e: Exception){
             throw UnknownError()
         }
-
-//        if (length > 0) {
-//            val dataStart = currentIdx + 2
-//            val dataEnd = dataStart + length
-//            tlvs.add(TLV(type.toInt(), Arrays.copyOfRange(data, dataStart, dataEnd)))
-//            currentIdx = dataEnd
-//        } else {
-//            tlvs.add(TLV(type.toInt(), ByteArray(0)))
-//            currentIdx = currentIdx + 2
-//        }
         currentIdx += length
         if(isTwoByteLength){
             currentIdx += 3
@@ -247,7 +247,7 @@ fun lookUpTlvInList (tlvList: List<TLV>, tlvType: Int) : TLV {
             return tlv
         }
     }
-    throw UnsupportedOperationException()
+    throw TLV.TLVNotFoundException("The tag specified by $tlvType could not be found in the TLV list")
 }
 
 fun lookUpTlvInListIfPresent (tlvList: List<TLV>, tlvType: Int) : TLV? {

@@ -88,7 +88,7 @@ public final class ByteUtils {
 
 
     @NonNull
-    @Size(value = 4)
+    @Size(value = 2)
     public static byte[] intToArray(int amount) {
         return ByteBuffer.allocate(4).putInt(amount).array();
     }
