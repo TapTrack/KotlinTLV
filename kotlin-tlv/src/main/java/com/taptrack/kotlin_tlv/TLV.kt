@@ -174,7 +174,7 @@ fun parseTlvData(data: ByteArray): List<TLV> {
                     }
                 }else{ // One byte length with two byte tag
                     if(currentIdx + 3 < data.size){
-                        length = data[currentIdx+3].toInt()
+                        length = data[currentIdx+3].toInt() and 0xff
                     }else{
                         throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
                     }
@@ -189,7 +189,7 @@ fun parseTlvData(data: ByteArray): List<TLV> {
                     throw TLV.MalformedTlvByteArrayException("Data too short to contain value specified in length header")
                 }
             }else{ //one byte length with one byte tag
-                length = data[currentIdx+1].toInt()
+                length = data[currentIdx+1].toInt() and 0xff
             }
         }
 
